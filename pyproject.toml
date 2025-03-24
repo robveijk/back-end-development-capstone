@@ -1,0 +1,7 @@
+[project]
+name = "capstone"
+version = "0.1.0"
+description = "IBM Back-End Developer project: Capstone Project"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
