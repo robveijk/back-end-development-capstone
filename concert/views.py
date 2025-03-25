@@ -21,7 +21,8 @@ def signup(request):
             if User.objects.filter(username=username).exists():
                 return render(request, "signup.html", {"form": SignUpForm, "message": "User already exists"})
             else:
-                user = User.objects.create_user(username=username, password=make_password(password))
+                # Note: Do _NOT_ user make_password here! It is called in create_user already
+                user = User.objects.create_user(username=username, password=password)
                 # user.save()  # Not necessary if we're not making changes
                 # Login: https://docs.djangoproject.com/en/5.1/topics/auth/default/#how-to-log-a-user-in
                 login(request, user)
@@ -57,10 +58,27 @@ def photos(request):
 
 
 def login_view(request):
-    pass
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        # Cannot use authenticate without AUTHENTICATION_BACKENDS
+        # user = authenticate(request, username=username, password=password)
+        try:
+            user = User.objects.get(username=username)
+            if user.check_password(password):
+                login(request, user)
+                return HttpResponseRedirect(reverse("index"))
+        except User.DoesNotExist:
+            # login failed
+            return render(request, "login.html", {"form": LoginForm})
+
+    return render(request, "login.html", {"form": LoginForm})
 
 def logout_view(request):
-    pass
+    logout(request)
+    return HttpResponseRedirect(reverse("index"))
+
 
 def concerts(request):
     pass
