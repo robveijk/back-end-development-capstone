@@ -22,11 +22,11 @@ def signup(request):
                 return render(request, "signup.html", {"form": SignUpForm, "message": "User already exists"})
             else:
                 user = User.objects.create_user(username=username, password=make_password(password))
-                user.save()
+                # user.save()  # Not necessary if we're not making changes
                 # Login: https://docs.djangoproject.com/en/5.1/topics/auth/default/#how-to-log-a-user-in
                 login(request, user)
                 # Redirect to index
-                return render(request, "index.html")
+                return HttpResponseRedirect(reverse("index"))
         except User.DoesNotExist:
             return render(request, "signup.html", {"form": SignUpForm})
 
