@@ -38,7 +38,7 @@ def photos(request):
         "event_date": "11/16/2022"
     }]
     return render(request, "photos.html", {"photos": photos})
-    
+
 
 def login_view(request):
     pass
