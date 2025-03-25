@@ -1,4 +1,4 @@
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
@@ -14,7 +14,23 @@ import requests as req
 # Create your views here.
 
 def signup(request):
-    pass
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        try:
+            if User.objects.filter(username=username).exists():
+                return render(request, "signup.html", {"form": SignUpForm, "message": "User already exists"})
+            else:
+                user = User.objects.create_user(username=username, password=make_password(password))
+                user.save()
+                # Login: https://docs.djangoproject.com/en/5.1/topics/auth/default/#how-to-log-a-user-in
+                login(request, user)
+                # Redirect to index
+                return render(request, "index.html")
+        except User.DoesNotExist:
+            return render(request, "signup.html", {"form": SignUpForm})
+
+    return render(request, "signup.html", {"form": SignUpForm})
 
 
 def index(request):
