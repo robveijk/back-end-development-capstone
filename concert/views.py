@@ -81,7 +81,22 @@ def logout_view(request):
 
 
 def concerts(request):
-    pass
+    if not request.user.is_authenticated:  # Not authenticated
+        return HttpResponseRedirect(reverse("login"))
+
+    # Authenticated
+    lst_of_concert = []
+    concert_objects = Concert.objects.all()
+    for concert in concert_objects:
+        try:
+            status = concert.attendee.filter(user=request.user).first().attending
+        except:
+            status = "-"
+        lst_of_concert.append({
+            "concert": concert,
+            "status": status
+        })
+    return render(request, "concerts.html", {"concerts": lst_of_concert})
 
 
 def concert_detail(request, id):
